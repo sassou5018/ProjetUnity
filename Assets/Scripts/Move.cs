@@ -8,15 +8,16 @@ public class Move : MonoBehaviour
 {
     public Rigidbody2D rb;
     public GameObject player;
+    public SpriteRenderer sr;
     public float speed = 5f;
     public Animator animator;
     public BoxCollider2D regularCollider;
     public BoxCollider2D SlideCollider;
+    public float slideSpeed = 20f;
 
     private void MovePlayer()
     {
         var input = Input.GetAxisRaw("Horizontal");
-        var slideSpeed = speed*5;
         rb.velocity = new Vector2(input * speed, rb.velocity.y);
         if(input != 0)
         {
@@ -27,30 +28,28 @@ public class Move : MonoBehaviour
         }
         if(input > 0)
         {
-            rb.transform.localScale = new Vector2((float)4.0504, (float)4.0504);
-            if (Input.GetKeyDown(KeyCode.LeftControl)){
-                slide(speed, slideSpeed);
-            }
+            sr.flipX = false;
         }
         if (input < 0)
         {
-            rb.transform.localScale = new Vector2((float)-4.0504, (float)4.0504);
-            if (Input.GetKeyDown(KeyCode.LeftControl)){
-                slide(speed, slideSpeed);
-            }
+            sr.flipX = true;
         }
     }
 
-    private void slide(float input, float slideSpeed){
+    private void slide(float slideSpeed){
         regularCollider.enabled = false;
         SlideCollider.enabled = true;
         animator.SetTrigger("isSlide");
-        rb.velocity = new Vector2(input * slideSpeed, rb.velocity.y);
+        if(sr.flipX == false){
+            rb.AddForce(Vector2.left * slideSpeed);
+        } else {
+            rb.AddForce(Vector2.right * slideSpeed);
+        }
         StartCoroutine(StopSlide());
     }
 
     private IEnumerator StopSlide(){
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(5.0f);
         regularCollider.enabled = true;
         SlideCollider.enabled = false;
     }
@@ -76,6 +75,9 @@ public class Move : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             animator.SetTrigger("isSlash");
+        }
+        if(Input.GetKeyDown(KeyCode.LeftControl)){
+            slide(slideSpeed);
         }
         
 
