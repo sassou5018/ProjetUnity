@@ -49,7 +49,7 @@ public class Move : MonoBehaviour
     }
 
     private IEnumerator StopSlide(){
-        yield return new WaitForSeconds(0.0f);
+        yield return new WaitForSeconds(0.8f);
         regularCollider.enabled = true;
         SlideCollider.enabled = false;
     }
